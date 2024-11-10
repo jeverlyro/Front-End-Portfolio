@@ -65,7 +65,7 @@ const BoxTitle = styled.h3`
 const BoxContent = styled.p`
   font-size: 1rem;
   color: #aaa;
-  width: 60%;
+  width: 70%;
 `;
 
 const ExperienceSection = styled.section`
@@ -80,7 +80,6 @@ const ExperienceSection = styled.section`
 const SectionTitle = styled.h3`
   font-size: 1.8rem;
   margin: 1rem 0 2rem;
-
   display: flex;
   align-items: center;
 `;

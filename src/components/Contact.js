@@ -38,6 +38,7 @@ const IconWrapper = styled.a`
   &:hover {
     transform: scale(1.2);
     color: #ff6b6b;
+    fa-flip: {true};
   }
 `;
 
