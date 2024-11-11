@@ -111,7 +111,6 @@ const FadeInSection = styled.div`
     transform 0.8s ease;
 `;
 
-// Loading spinner styled component
 const LoadingSpinner = styled.div`
   border: 5px solid #f3f3f3;
   border-top: 5px solid #3498db;
@@ -124,7 +123,7 @@ const LoadingSpinner = styled.div`
 
 const Home = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Track if content is loading
+  const [isLoading, setIsLoading] = useState(true);
   const sectionRef = useRef(null);
 
   useEffect(() => {
@@ -132,7 +131,7 @@ const Home = () => {
       (entries) => {
         if (entries[0].isIntersecting) {
           setIsVisible(true);
-          setIsLoading(false); // Hide loading animation after content is visible
+          setIsLoading(false);
           observer.unobserve(sectionRef.current);
         }
       },
@@ -148,10 +147,7 @@ const Home = () => {
 
   return (
     <HomeContainer id="home">
-      {isLoading && (
-        // Show loading spinner if content is still loading
-        <LoadingSpinner />
-      )}
+      {isLoading && <LoadingSpinner />}
       <FadeInSection ref={sectionRef} isVisible={isVisible}>
         <Content>
           <ProfilePicture />
