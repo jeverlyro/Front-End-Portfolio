@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faGithub,
-  faInstagram,
   faDiscord,
   faLinkedin,
 } from "@fortawesome/free-brands-svg-icons";
@@ -61,13 +60,6 @@ const Contact = () => (
       </IconWrapper>
       <IconWrapper
         href="https://instagram.com/jeverlyro"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <FontAwesomeIcon icon={faInstagram} />
-      </IconWrapper>
-      <IconWrapper
-        href="https://discord.com/users/366208551158415361"
         target="_blank"
         rel="noopener noreferrer"
       >

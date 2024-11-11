@@ -1,6 +1,7 @@
-// components/About.js
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { db } from "../config/firebase"; // Adjust the import path if necessary
+import { collection, onSnapshot } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCode,
@@ -9,6 +10,14 @@ import {
   faBriefcase,
   faGraduationCap,
 } from "@fortawesome/free-solid-svg-icons";
+
+const iconMap = {
+  faCode: faCode,
+  faHiking: faHiking,
+  faPalette: faPalette,
+  faBriefcase: faBriefcase,
+  faGraduationCap: faGraduationCap,
+};
 
 const AboutContainer = styled.section`
   padding: 4rem 1rem;
@@ -97,78 +106,91 @@ const SectionContent = styled.p`
   margin-left: 3rem;
 `;
 
-const About = () => (
-  <>
-    <AboutContainer id="about">
-      <Title>About Me</Title>
-      <BoxGrid>
-        <AboutBox>
-          <Icon icon={faCode} />
-          <BoxTitle>Things I Like</BoxTitle>
-          <BoxContent>Simplistic, Minimalism, Technology</BoxContent>
-        </AboutBox>
-        <AboutBox>
-          <Icon icon={faHiking} />
-          <BoxTitle>Hobbies</BoxTitle>
-          <BoxContent>
-            Gaming, Movies, Rap, Mechanical Keyboards, Comics
-          </BoxContent>
-        </AboutBox>
-        <AboutBox>
-          <Icon icon={faPalette} />
-          <BoxTitle>Skills</BoxTitle>
-          <BoxContent>
-            HTML, CSS, JavaScript, React, React Native, UI/UX Design, Graphic
-            Design
-          </BoxContent>
-        </AboutBox>
-      </BoxGrid>
-    </AboutContainer>
+const About = () => {
+  const [aboutData, setAboutData] = useState([]);
+  const [experienceData, setExperienceData] = useState([]);
+  const [academicHistory, setAcademicHistory] = useState([]);
 
-    <ExperienceSection id="experience">
-      <Title>Experience & Academic History</Title>
+  useEffect(() => {
+    const aboutCollection = collection(db, "about");
+    const experienceCollection = collection(db, "experience");
+    const academicCollection = collection(db, "academicHistory");
 
-      <SectionTitle>
-        <SectionIcon icon={faBriefcase} />
-        Experience
-      </SectionTitle>
-      <SectionContent>Freelance as Graphic Designer.</SectionContent>
-      <SectionContent>
-        Graphic Designer and Video Editor at Highschool Student Association.
-      </SectionContent>
-      <SectionContent>
-        Graphic Designer at BEM UNKLAB in EDITOR GEMA Division.
-      </SectionContent>
-      <SectionContent>
-        Graphic Designer at Computer Science Student Association in Multimedia
-        Division.
-      </SectionContent>
-      <SectionContent>
-        Graphic Designer at Voice of Computer Science in Multimedia Division.
-      </SectionContent>
-      <SectionContent>
-        Graphic Designer at Voice of Computer Science in Multimedia Division.
-      </SectionContent>
-      <SectionContent>
-        Secondary-Video Editor at Voice of Computer Science in Multimedia
-        Division.
-      </SectionContent>
+    // Real-time listener for 'about' collection
+    const unsubscribeAbout = onSnapshot(aboutCollection, (snapshot) => {
+      const aboutList = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setAboutData(aboutList);
+    });
 
-      <SectionTitle>
-        <SectionIcon icon={faGraduationCap} />
-        Academic History
-      </SectionTitle>
-      <SectionContent>
-        SDN 3 Werdhi Agung, Bolaang Mongondow Regency, North Sulawesi.
-      </SectionContent>
-      <SectionContent>
-        SMPN 1 Werdhi Agung, Bolaang Mongondow Regency, North Sulawesi.
-      </SectionContent>
-      <SectionContent>
-        SMA Swadharma Werdhi Agung, Bolaang Mongondow Regency, North Sulawesi.
-      </SectionContent>
-    </ExperienceSection>
-  </>
-);
+    // Real-time listener for 'experience' collection
+    const unsubscribeExperience = onSnapshot(
+      experienceCollection,
+      (snapshot) => {
+        const experienceList = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setExperienceData(experienceList);
+      }
+    );
+
+    // Real-time listener for 'academicHistory' collection
+    const unsubscribeAcademic = onSnapshot(academicCollection, (snapshot) => {
+      const academicList = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setAcademicHistory(academicList);
+    });
+
+    // Clean up listeners on unmount
+    return () => {
+      unsubscribeAbout();
+      unsubscribeExperience();
+      unsubscribeAcademic();
+    };
+  }, []);
+
+  return (
+    <>
+      <AboutContainer id="about">
+        <Title>About Me</Title>
+        <BoxGrid>
+          {aboutData.map((item) => (
+            <AboutBox key={item.id}>
+              {/* Render icon based on the icon name from Firestore */}
+              <Icon icon={iconMap[item.icon]} />
+              <BoxTitle>{item.title}</BoxTitle>
+              <BoxContent>{item.content}</BoxContent>
+            </AboutBox>
+          ))}
+        </BoxGrid>
+      </AboutContainer>
+
+      <ExperienceSection id="experience">
+        <Title>Experience & Academic History</Title>
+
+        <SectionTitle>
+          <SectionIcon icon={faBriefcase} />
+          Experience
+        </SectionTitle>
+        {experienceData.map((exp) => (
+          <SectionContent key={exp.id}>{exp.content}</SectionContent>
+        ))}
+
+        <SectionTitle>
+          <SectionIcon icon={faGraduationCap} />
+          Academic History
+        </SectionTitle>
+        {academicHistory.map((edu) => (
+          <SectionContent key={edu.id}>{edu.content}</SectionContent>
+        ))}
+      </ExperienceSection>
+    </>
+  );
+};
 
 export default About;
