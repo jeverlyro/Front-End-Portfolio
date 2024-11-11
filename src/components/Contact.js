@@ -1,6 +1,7 @@
-// components/Contact.js
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { db } from "../config/firebase"; // Adjust the import path if necessary
+import { doc, onSnapshot } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faGithub,
@@ -47,38 +48,63 @@ const ContactDetails = styled.div`
   text-align: center;
 `;
 
-const Contact = () => (
-  <ContactContainer id="contact">
-    <ContactTitle>Get in Touch</ContactTitle>
-    <SocialIcons>
-      <IconWrapper
-        href="https://github.com/jeverlyro"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <FontAwesomeIcon icon={faGithub} />
-      </IconWrapper>
-      <IconWrapper
-        href="https://instagram.com/jeverlyro"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <FontAwesomeIcon icon={faDiscord} />
-      </IconWrapper>
-      <IconWrapper
-        href="https://www.linkedin.com/in/i-kadek-tresna-jeverly-331477264/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <FontAwesomeIcon icon={faLinkedin} />
-      </IconWrapper>
-    </SocialIcons>
-    <ContactDetails>
-      <p>ikadektresnajeverly10@gmail.com</p>
-      <p>+62 858 2354 9380</p>
-      <p>Airmadidi Bawah, Airmadidi, Minahasa Utara, Sulawesi Utara</p>
-    </ContactDetails>
-  </ContactContainer>
-);
+const Contact = () => {
+  const [contactInfo, setContactInfo] = useState({
+    email: "",
+    phone: "",
+    address: "",
+    github: "",
+    discord: "",
+    linkedin: "",
+  });
+
+  useEffect(() => {
+    const contactDocRef = doc(db, "contact", "contactInfo"); // Replace "yourDocumentID" with the actual document ID
+
+    // Real-time listener for contact information
+    const unsubscribe = onSnapshot(contactDocRef, (doc) => {
+      if (doc.exists()) {
+        setContactInfo(doc.data());
+      }
+    });
+
+    // Clean up listener on unmount
+    return () => unsubscribe();
+  }, []);
+
+  return (
+    <ContactContainer id="contact">
+      <ContactTitle>Get in Touch</ContactTitle>
+      <SocialIcons>
+        <IconWrapper
+          href={contactInfo.github}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <FontAwesomeIcon icon={faGithub} />
+        </IconWrapper>
+        <IconWrapper
+          href={contactInfo.discord}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <FontAwesomeIcon icon={faDiscord} />
+        </IconWrapper>
+        <IconWrapper
+          href={contactInfo.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <FontAwesomeIcon icon={faLinkedin} />
+        </IconWrapper>
+      </SocialIcons>
+      <ContactDetails>
+        <p>{contactInfo.email}</p>
+        <p>{contactInfo.phone}</p>
+        <p>{contactInfo.address}</p>
+      </ContactDetails>
+    </ContactContainer>
+  );
+};
 
 export default Contact;
