@@ -59,16 +59,14 @@ const Contact = () => {
   });
 
   useEffect(() => {
-    const contactDocRef = doc(db, "contact", "contactInfo"); // Replace "yourDocumentID" with the actual document ID
+    const contactDocRef = doc(db, "contact", "contactInfo");
 
-    // Real-time listener for contact information
     const unsubscribe = onSnapshot(contactDocRef, (doc) => {
       if (doc.exists()) {
         setContactInfo(doc.data());
       }
     });
 
-    // Clean up listener on unmount
     return () => unsubscribe();
   }, []);
 

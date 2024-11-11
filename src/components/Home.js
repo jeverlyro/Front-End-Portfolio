@@ -3,6 +3,12 @@ import styled, { keyframes } from "styled-components";
 import backgroundImage from "../assets/backgroundImage.gif";
 import profileImage from "../assets/profileImage.gif";
 
+// Loading animation keyframes
+const spin = keyframes`
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+`;
+
 const colorShift = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -105,8 +111,20 @@ const FadeInSection = styled.div`
     transform 0.8s ease;
 `;
 
+// Loading spinner styled component
+const LoadingSpinner = styled.div`
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: ${spin} 2s linear infinite;
+  position: absolute;
+`;
+
 const Home = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Track if content is loading
   const sectionRef = useRef(null);
 
   useEffect(() => {
@@ -114,6 +132,7 @@ const Home = () => {
       (entries) => {
         if (entries[0].isIntersecting) {
           setIsVisible(true);
+          setIsLoading(false); // Hide loading animation after content is visible
           observer.unobserve(sectionRef.current);
         }
       },
@@ -129,6 +148,10 @@ const Home = () => {
 
   return (
     <HomeContainer id="home">
+      {isLoading && (
+        // Show loading spinner if content is still loading
+        <LoadingSpinner />
+      )}
       <FadeInSection ref={sectionRef} isVisible={isVisible}>
         <Content>
           <ProfilePicture />
